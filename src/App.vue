@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 
 const usuario = ref({
   nombre: '',
@@ -35,21 +35,53 @@ const tecnologias = [
   'Vue', 'React', 'Angular', 'Svelte', 'Astro', 'Nuxt'
 ]
 
+const handleSubmit = () => {
+  console.log(`%cEnviando datos de: ${usuario.value.nombre}`, 'background-color:teal;color:white;padding:5px;border-radius:5px')
+  console.log(usuario.value)
+}
+
+// Validaciones
+const isNameInvalid = computed(() => {
+  const nombre = usuario.value.nombre
+  return !nombre || nombre === ''
+})
+
+const isAgeInvalid = computed(() => {
+  const edad = usuario.value.edad
+  return !edad || edad <= 0 || edad > 120
+})
+
+const isInteresInvalid = computed(() => !usuario.value.preferencias.intereses.length)
+
+const ageError = ref(false)
+const nameError = ref(false)
+const interesError = ref(false)
+
+const ageValidation = () => ageError.value = isAgeInvalid.value
+const nameValidation = () => nameError.value = isNameInvalid.value
+const interesValidation = () => interesError.value = isInteresInvalid.value
+
+const isFormInvalid = computed(() => isAgeInvalid.value || isNameInvalid.value || isInteresInvalid.value)
 </script>
 
 <template>
   <main class="container my-4">
     <h1>Registro de Perfil de Usuario</h1>
-    <form>
+    <form @submit.prevent="handleSubmit">
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3">
         <div class="col">
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" name="nombre" id="nombre" v-model="usuario.nombre">
+            <input type="text" class="form-control" :class="{ 'border-danger': nameError }" name="nombre" id="nombre"
+              v-model="usuario.nombre" @blur="nameValidation">
+            <p class="text-danger error-text" v-show="nameError">⚠︎ Nombre es obligatorio</p>
           </div>
           <div class="mb-3">
             <label for="edad" class="form-label">Edad</label>
-            <input type="number" class="form-control" name="edad" id="edad" v-model.number="usuario.edad">
+            <input type="number" class="form-control" :class="{ 'border-danger': ageError }" name="edad" id="edad"
+              v-model.number="usuario.edad" @blur="ageValidation">
+            <p class="text-danger error-text" v-show="ageError">⚠︎ Edad es obligatoria y debe estar entre 1 y 120</p>
+
           </div>
           <div class="mb-3">
             <label for="bio" class="form-label">Biografía</label>
@@ -59,28 +91,33 @@ const tecnologias = [
         </div>
         <div class="col">
           <!-- Nivel de experiencia: radio button group -->
-          <fieldset>
-            <legend class="h6">Nivel de Experiencia</legend>
-            <div class="form-check" v-for="nivel in niveles" :key="nivel">
-              <input class="form-check-input" type="radio" :value="nivel" :name="nivel" :id="nivel"
-                v-model="usuario.preferencias.nivel">
-              <label class="form-check-label" :for="nivel">
-                {{ nivel }}
-              </label>
-            </div>
-          </fieldset>
+          <div class="mb-3">
+            <fieldset>
+              <legend class="h6">Nivel de Experiencia</legend>
+              <div class="form-check" v-for="nivel in niveles" :key="nivel">
+                <input class="form-check-input" type="radio" :value="nivel" :name="nivel" :id="nivel"
+                  v-model="usuario.preferencias.nivel">
+                <label class="form-check-label" :for="nivel">
+                  {{ nivel }}
+                </label>
+              </div>
+            </fieldset>
+          </div>
 
           <!-- Intereses: check group -->
-          <fieldset>
-            <legend class="h6">Intereses</legend>
-            <div class="form-check" v-for="interes in intereses" :key="interes">
-              <input class="form-check-input" type="checkbox" :value="interes" :name="interes" :id="interes"
-                v-model="usuario.preferencias.intereses">
-              <label class="form-check-label" :for="interes">
-                {{ interes }}
-              </label>
-            </div>
-          </fieldset>
+          <div class="mb-3">
+            <fieldset>
+              <legend class="h6">Intereses</legend>
+              <div class="form-check" v-for="interes in intereses" :key="interes">
+                <input class="form-check-input" type="checkbox" :value="interes" :name="interes" :id="interes"
+                  v-model="usuario.preferencias.intereses" @change="interesValidation">
+                <label class="form-check-label" :for="interes">
+                  {{ interes }}
+                </label>
+                <p class="text-danger error-text" v-show="interesError">⚠︎ Debes seleccionar al menos un interés</p>
+              </div>
+            </fieldset>
+          </div>
         </div>
         <div class="col">
           <!-- Select de países -->
@@ -104,6 +141,9 @@ const tecnologias = [
           </div>
         </div>
       </div>
+      <div class="text-center d-grid d-md-block">
+        <button type="submit" class="btn btn-primary" :disabled="isFormInvalid">Enviar datos</button>
+      </div>
     </form>
 
     <hr class="my-5">
@@ -111,19 +151,37 @@ const tecnologias = [
     <!-- Sección Panel de Resumen -->
     <div class="card text-center">
       <div class="card-header">
-        Featured
+        Resumen de datos del usuario
       </div>
       <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+        <h5 class="card-title">{{ usuario.nombre }}</h5>
+        <h6 class="card-subtitle">Edad: {{ usuario.edad }}</h6>
+        <p class="card-text">Desarrollador nivel {{ usuario.preferencias.nivel }}</p>
+        <div class="row row-cols-1 row-cols-md-2">
+          <div class="col text-start">
+            <p class="fw-bold">Interesado en:</p>
+            <ul class="list-group ">
+              <li class="list-group-item" v-for="interes in usuario.preferencias.intereses">{{ interes }}</li>
+            </ul>
+          </div>
+          <div class="col text-start">
+            <p class="fw-bold">Tecnologías que maneja:</p>
+            <ul class="list-group ">
+              <li class="list-group-item" v-for="tec in usuario.preferencias.tecnologias">{{ tec }}</li>
+            </ul>
+          </div>
+        </div>
       </div>
       <div class="card-footer text-body-secondary">
-        2 days ago
+        País: {{ usuario.preferencias.pais.nombre }}
       </div>
     </div>
   </main>
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.error-text {
+  font-size: 12px;
+}
+</style>
