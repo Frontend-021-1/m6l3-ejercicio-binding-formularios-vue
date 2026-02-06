@@ -1,44 +1,129 @@
 # l3-ejercicio-binding-formularios
 
-This template should help get you started developing with Vue 3 in Vite.
+## Decisiones para Binding y validaciones
 
-## Recommended IDE Setup
+### Modificadores de v-model utilizados:
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+- **v-model**: Binding bidireccional estándar (nombre, edad)
+- **v-model.number**: Convierte automáticamente el input a número (edad)
+- **v-model.lazy**: Actualiza solo cuando el usuario sale del campo (biografía)
 
-## Recommended Browser Setup
+### Validaciones implementadas:
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+1. **Nombre** (requerido): Debe contener texto no vacío
+2. **Edad** (requerida): Debe ser un número entre 1 y 120
+3. **Intereses** (requerido): Debe seleccionar al menos una opción
+4. Validación en tiempo real con eventos `@blur` y `@change`
+5. El botón de envío se deshabilita si el formulario es inválido
 
-## Customize configuration
+## Capturas
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Captura del Formulario
 
-## Project Setup
+### Captura del Panel de Resumen
 
-```sh
-pnpm install
+## Sobre el Proyecto
+
+### Contexto
+
+Crear un formulario interactivo donde se ponga en práctica el 2-way binding de Vue con `v-model`.
+Se utilizarán distintos tipos de input:
+
+- text
+- number
+- textarea
+- checkbox
+- radio
+- select
+
+Se desarrollará un panel de resumen donde se mostrarán los cambios realizados en el formulario en tiempo real.
+
+### Estructura de datos
+
+El formulario servirá para la creación del perfil de un `usuario`. Que tendrá la siguiente estructura:
+
+```javascript
+{
+  nombre: '',           // String: Nombre completo del usuario (requerido)
+  edad: null,           // Number: Edad del usuario (1-120, requerido)
+  bio: '',              // String: Biografía o descripción personal (opcional)
+  preferencias: {
+    nivel: '',          // String: Nivel de experiencia (Trainee, Junior, Semi Senior, Senior)
+    intereses: [],      // Array: Lista de intereses seleccionados (requerido, mínimo 1)
+    pais: '',           // Object: País seleccionado con código y nombre
+    tecnologias: []     // Array: Tecnologías que maneja (múltiple)
+  }
+}
 ```
 
-### Compile and Hot-Reload for Development
+### Opciones disponibles:
 
-```sh
-pnpm dev
-```
+**Niveles de Experiencia:**
 
-### Compile and Minify for Production
+- Trainee
+- Junior
+- Semi Senior
+- Senior
 
-```sh
-pnpm build
-```
+**Intereses:**
 
-### Lint with [ESLint](https://eslint.org/)
+- Programacion
+- Hiking
+- Gaming
+- Cocina
 
-```sh
-pnpm lint
-```
+**Países:**
+
+- Chile (CL)
+- Argentina (AR)
+- México (MX)
+- España (ES)
+- Japón (JP)
+- Canadá (CA)
+- Australia (AU)
+- Brasil (BR)
+- Alemania (DE)
+- Italia (IT)
+
+**Tecnologías:**
+
+- Vue
+- React
+- Angular
+- Svelte
+- Astro
+- Nuxt
+
+## Funcionalidades principales
+
+1. **Formulario interactivo** con 6 tipos de inputs diferentes (text, number, textarea, radio, checkbox, select)
+2. **2-way binding** en tiempo real con `v-model`
+3. **Panel de resumen** que muestra los datos del formulario en vivo
+4. **Validaciones reactivas** que se actualizan mientras el usuario escribe/selecciona
+5. **Botón de envío** deshabilitado mientras el formulario sea inválido
+6. Uso de **Composition API** de Vue 3 con `<script setup>`
+
+## Tecnologías utilizadas
+
+- **Vue 3**: Framework JavaScript progresivo
+- **Vite**: Herramienta de build rápida y moderna
+- **Bootstrap 5**: Framework CSS para estilos
+- **ESLint**: Linter para mantener código limpio
+
+## Instalación y Configuración
+
+1. Clonar el repositorio
+2. Instalar dependencias: `pnpm install` o `npm install`
+3. Ejecutar en desarrollo: `pnpm dev` o `npm run dev`
+4. El servidor estará disponible en `http://localhost:5173`, ahí podrás ver los cambios en tiempo real.
+
+## Conceptos clave de Vue abordados
+
+- **v-model**: Two-way data binding
+- **computed()**: Propiedades reactivas calculadas
+- **ref()**: Crea references reactivas
+- **v-for**: Renderización de listas
+- **v-if/v-show**: Renderización condicional
+- **@click/@change/@blur**: Event listeners
+- **:class/:value/:disabled**: Binding de atributos y propiedades
+- **Métodos validación**: Validación en tiempo real con eventos`
